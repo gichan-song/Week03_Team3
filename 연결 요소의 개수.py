@@ -1,36 +1,40 @@
 import sys
+from collections import deque
 
 Input = sys.stdin.readline
 
 N, M = map(int, Input().split())
 
-lines = []
+graph = [[] for _ in range(N+1)]
 
+cnt = 0
+visited = [False] * (N+1)
 
 for _ in range(M):
     a, b = map(int, Input().split())
-    lines.append([a, b])
-sets = [set(lines[0])]
+    graph[a].append(b)
+    graph[b].append(a)
 
-for a, b in lines:
-    is_in = False
-    for i in range(len(sets)):
-        if a in sets[i] or b in sets[i]:
-            is_in = True
-            break
-    if not is_in:
-        for c, d in lines:
-            if a == c or a == d or b == c or b == d:
-                is_in = True
-                break
-            else:
-                Set = set([a, b])
-                sets.append(Set)
-                break
-    if is_in:
-        for i in range(len(sets)):
-            if a in sets[i] or b in sets[i]:
-                sets[i].add(a)
-                sets[i].add(b)
 
-print(sets)
+def bfs(v):
+    visited[v] = True
+    q = deque([v])
+
+    while q:
+        pop = q.popleft()
+        for i in graph[pop]:
+            if not visited[i]:
+                q.append(i)
+                visited[i] = True
+
+
+for i in range(1, N+1):
+    if not visited[i]:
+        if not graph[i]:
+            visited[i] = True
+            cnt += 1
+        else:
+            bfs(i)
+            cnt += 1
+
+print(cnt)
